@@ -1,0 +1,6 @@
+@StoreNet.API.Layer_HostAddress = http://localhost:5102
+
+GET {{StoreNet.API.Layer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,6 +1,8 @@
-﻿using StoreNet.Domain.Layer.DTOs;
+﻿using AutoMapper;
+using StoreNet.Domain.Layer.DTOs;
 using StoreNet.Domain.Layer.Entities;
 using StoreNet.Domain.Layer.Interfaces;
+using StoreNet.Application.Layer.Factories;
 
 namespace StoreNet.Application.Layer.Services
 {
@@ -8,11 +10,15 @@ namespace StoreNet.Application.Layer.Services
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IEntityFactory _entityFactory;
+        private readonly IMapper _mapper; 
 
-        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository)
+        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IEntityFactory entityFactory, IMapper mapper)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
+            _entityFactory = entityFactory;
+            _mapper = mapper;
         }
 
         // Crée un produit
@@ -34,35 +40,17 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<ProductResponseDTO>(400, "Specified category does not exist.");
                 }
 
-                // Mapper les données du DTO vers le modèle Product
-                var product = new Product
-                {
-                    Name = productDto.Name,
-                    Description = productDto.Description,
-                    Price = productDto.Price,
-                    StockQuantity = productDto.StockQuantity,
-                    ImageUrl = productDto.ImageUrl,
-                    DiscountPercentage = productDto.DiscountPercentage,
-                    CategoryId = productDto.CategoryId,
-                    IsAvailable = true
-                };
+                // Utilisation de la factory pour créer un produit
+                var product = _entityFactory.CreateEntity<Product>();
+
+                // Mapper ProductCreateDTO vers Product
+                _mapper.Map(productDto, product);
 
                 // Ajouter le produit au repository
                 await _productRepository.AddAsync(product);
 
                 // Mapper le modèle Product vers ProductResponseDTO
-                var productResponse = new ProductResponseDTO
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Description = product.Description,
-                    Price = product.Price,
-                    StockQuantity = product.StockQuantity,
-                    ImageUrl = product.ImageUrl,
-                    DiscountPercentage = product.DiscountPercentage,
-                    CategoryId = product.CategoryId,
-                    IsAvailable = product.IsAvailable
-                };
+                var productResponse = _mapper.Map<ProductResponseDTO>(product);
 
                 return new ApiResponse<ProductResponseDTO>(200, productResponse);
             }
@@ -72,9 +60,8 @@ namespace StoreNet.Application.Layer.Services
             }
         }
 
-
         // Récupère un produit par son ID
-        public async Task<ApiResponse<ProductResponseDTO>> GetProductByIdAsync(Guid id)
+        public async Task<ApiResponse<ProductResponseDTO>> GetProductByIdAsync(string id)
         {
             try
             {
@@ -85,18 +72,7 @@ namespace StoreNet.Application.Layer.Services
                 }
 
                 // Mapper le modèle Product vers ProductResponseDTO
-                var productResponse = new ProductResponseDTO
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    Description = product.Description,
-                    Price = product.Price,
-                    StockQuantity = product.StockQuantity,
-                    ImageUrl = product.ImageUrl,
-                    DiscountPercentage = product.DiscountPercentage,
-                    CategoryId = product.CategoryId,
-                    IsAvailable = product.IsAvailable
-                };
+                var productResponse = _mapper.Map<ProductResponseDTO>(product);
 
                 return new ApiResponse<ProductResponseDTO>(200, productResponse);
             }
@@ -123,14 +99,8 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<ConfirmationResponseDTO>(400, "Specified category does not exist.");
                 }
 
-                // Mettre à jour les propriétés du produit
-                product.Name = productDto.Name;
-                product.Description = productDto.Description;
-                product.Price = productDto.Price;
-                product.StockQuantity = productDto.StockQuantity;
-                product.ImageUrl = productDto.ImageUrl;
-                product.DiscountPercentage = productDto.DiscountPercentage;
-                product.CategoryId = productDto.CategoryId;
+                // Mapper ProductUpdateDTO vers Product
+                _mapper.Map(productDto, product);
 
                 await _productRepository.UpdateAsync(product);
 
@@ -148,7 +118,7 @@ namespace StoreNet.Application.Layer.Services
         }
 
         // Supprime (soft delete) un produit
-        public async Task<ApiResponse<ConfirmationResponseDTO>> DeleteProductAsync(Guid id)
+        public async Task<ApiResponse<ConfirmationResponseDTO>> DeleteProductAsync(string id)
         {
             try
             {
@@ -182,18 +152,8 @@ namespace StoreNet.Application.Layer.Services
             {
                 var products = await _productRepository.GetAllAsync();
 
-                var productList = products.Select(p => new ProductResponseDTO
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    Price = p.Price,
-                    StockQuantity = p.StockQuantity,
-                    ImageUrl = p.ImageUrl,
-                    DiscountPercentage = p.DiscountPercentage,
-                    CategoryId = p.CategoryId,
-                    IsAvailable = p.IsAvailable
-                }).ToList();
+                // Mapper la liste de produits vers une liste de ProductResponseDTO
+                var productList = _mapper.Map<List<ProductResponseDTO>>(products);
 
                 return new ApiResponse<List<ProductResponseDTO>>(200, productList);
             }
@@ -204,7 +164,7 @@ namespace StoreNet.Application.Layer.Services
         }
 
         // Récupère les produits d'une catégorie spécifique
-        public async Task<ApiResponse<List<ProductResponseDTO>>> GetAllProductsByCategoryAsync(Guid categoryId)
+        public async Task<ApiResponse<List<ProductResponseDTO>>> GetAllProductsByCategoryAsync(string categoryId)
         {
             try
             {
@@ -215,18 +175,8 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<List<ProductResponseDTO>>(404, "No products found in the specified category.");
                 }
 
-                var productList = products.Select(p => new ProductResponseDTO
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    Price = p.Price,
-                    StockQuantity = p.StockQuantity,
-                    ImageUrl = p.ImageUrl,
-                    DiscountPercentage = p.DiscountPercentage,
-                    CategoryId = p.CategoryId,
-                    IsAvailable = p.IsAvailable
-                }).ToList();
+                // Mapper la liste de produits vers une liste de ProductResponseDTO
+                var productList = _mapper.Map<List<ProductResponseDTO>>(products);
 
                 return new ApiResponse<List<ProductResponseDTO>>(200, productList);
             }
@@ -247,7 +197,9 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<ConfirmationResponseDTO>(404, "Product not found.");
                 }
 
-                product.IsAvailable = productStatusUpdateDTO.IsAvailable;
+                // Mapper ProductStatusUpdateDTO vers Product
+                _mapper.Map(productStatusUpdateDTO, product);
+
                 await _productRepository.UpdateAsync(product);
 
                 var confirmationMessage = new ConfirmationResponseDTO

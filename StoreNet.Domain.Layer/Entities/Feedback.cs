@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StoreNet.Domain.Layer.Interfaces;
 
 namespace StoreNet.Domain.Layer.Entities;
 
@@ -12,11 +13,11 @@ public class Feedback : BaseEntity
     // Represents customer feedback for a product
     // Foreign key to Customer
     [Required]
-    public Guid CustomerId { get; set; }
+    public string CustomerId { get; set; }
     public Customer Customer { get; set; }
     // Foreign key to Product
     [Required]
-    public Guid ProductId { get; set; }
+    public string ProductId { get; set; }
     public Product Product { get; set; }
     // Rating between 1 and 5
     [Required]

@@ -6,7 +6,7 @@ namespace StoreNet.Domain.Layer.DTOs;
 public class RemoveCartItemDTO
 {
     [Required(ErrorMessage = "CustomerId is required.")]
-    public Guid CustomerId { get; set; }
+    public string CustomerId { get; set; }
     [Required(ErrorMessage = "CartItemId is required.")]
-    public Guid CartItemId { get; set; }
+    public string CartItemId { get; set; }
 }

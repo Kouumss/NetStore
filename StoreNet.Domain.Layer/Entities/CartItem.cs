@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using StoreNet.Domain.Layer.Interfaces;
 
 
 namespace StoreNet.Domain.Layer.Entities;
@@ -8,11 +9,11 @@ public class CartItem : BaseEntity
 {
     // Represents an individual item within a shopping cart
     [Required]
-    public Guid CartId { get; set; }
+    public string CartId { get; set; }
     [ForeignKey("CartId")]
     public Cart Cart { get; set; }
     [Required]
-    public Guid ProductId { get; set; }
+    public string ProductId { get; set; }
     [ForeignKey("ProductId")]
     public Product Product { get; set; }
     [Required]

@@ -21,10 +21,10 @@ public class Product : BaseEntity
     public string ImageUrl { get; set; }
     [Range(0, 100, ErrorMessage = "Discount Percentage must be between 0% and 100%.")]
     public int DiscountPercentage { get; set; }
-    public bool IsAvailable { get; set; }
+    public bool IsAvailable { get; set; } = true;
     // Foreign key to Category
     [Required(ErrorMessage = "Category ID is required.")]
-    public Guid CategoryId { get; set; }
+    public string CategoryId { get; set; }
     [ForeignKey("CategoryId")]
     public Category Category { get; set; }
     public ICollection<OrderItem> OrderItems { get; set; }

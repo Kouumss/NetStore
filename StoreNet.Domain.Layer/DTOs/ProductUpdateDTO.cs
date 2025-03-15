@@ -5,7 +5,7 @@ namespace StoreNet.Domain.Layer.DTOs
     public class ProductUpdateDTO
     {
         [Required(ErrorMessage = "Product Id is required.")]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         [Required(ErrorMessage = "Product Name is required.")]
         [StringLength(100, MinimumLength = 3, ErrorMessage = "Product Name must be between 3 and 100 characters.")]
         public string Name { get; set; }
@@ -21,6 +21,6 @@ namespace StoreNet.Domain.Layer.DTOs
         [Range(0, 100, ErrorMessage = "Discount Percentage must be between 0% and 100%.")]
         public int DiscountPercentage { get; set; }
         [Required(ErrorMessage = "Category ID is required.")]
-        public Guid CategoryId { get; set; }
+        public string CategoryId { get; set; }
     }
 }

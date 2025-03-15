@@ -1,0 +1,32 @@
+[
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa4",
+        "Name": "Laptop",
+        "Description": "High performance laptop",
+        "Price": 1000,
+        "StockQuantity": 50,
+        "ImageUrl": "https://example.com/laptop.jpg",
+        "DiscountPercentage": 10,
+        "CategoryId": "3fa85f64-5717-4562-b3fc-2c963f66afa1"
+    },
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa5",
+        "Name": "Novel",
+        "Description": "Interesting novel",
+        "Price": 20,
+        "StockQuantity": 100,
+        "ImageUrl": "https://example.com/novel.jpg",
+        "DiscountPercentage": 5,
+        "CategoryId": "3fa85f64-5717-4562-b3fc-2c963f66afa2"
+    },
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "Name": "T-Shirt",
+        "Description": "Comfortable cotton t-shirt",
+        "Price": 15,
+        "StockQuantity": 200,
+        "ImageUrl": "https://example.com/tshirt.jpg",
+        "DiscountPercentage": 20,
+        "CategoryId": "3fa85f64-5717-4562-b3fc-2c963f66afa3"
+    }
+]

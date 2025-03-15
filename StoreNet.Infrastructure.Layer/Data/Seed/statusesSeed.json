@@ -1,0 +1,52 @@
+[
+    {
+        "Id": "1f37c011-d21f-4cc8-8dcd-6f0fa96c923d",
+        "Rank" : 1,
+        "Name": "Pending"
+    },
+    {
+        "Id": "77bc914e-4fd0-4313-8d92-1e2531cdeab7",
+        "Rank": 2,
+        "Name": "Processing"
+    },
+    {
+        "Id": "be845c09-50a9-4e4c-93b4-39c2dbd2a3c2",
+        "Rank": 3,
+        "Name": "Shipped"
+    },
+    {
+        "Id": "de765f85-1866-44b8-8d66-92ea3ed48d92",
+        "Rank": 4,
+        "Name": "Delivered"
+    },
+    {
+        "Id": "6dd12ec9-3c58-42c3-a3e4-902f12f7c84e",
+        "Rank": 5,
+        "Name": "Canceled"
+    },
+    {
+        "Id": "0cc3b9be-10e4-4bb5-b44e-7e8d8b227617",
+        "Rank": 6,
+        "Name": "Completed"
+    },
+    {
+        "Id": "7b6bccee-e8b4-4f3e-a6d1-4e830cdf11d5",
+        "Rank": 7,
+        "Name": "Failed"
+    },
+    {
+        "Id": "4829f8a6-2e59-400a-9816-5d90ac7ba9a1",
+        "Rank": 8,
+        "Name": "Approved"
+    },
+    {
+        "Id": "39f9e31f-0c3f-46b4-80ae-b8446377cb7f",
+        "Rank": 9,
+        "Name": "Rejected"
+    },
+    {
+        "Id": "3f92e3f1-2642-497e-bb6f-3fcf89c76862",
+        "Rank": 10,
+        "Name": "Refunded"
+    }
+]

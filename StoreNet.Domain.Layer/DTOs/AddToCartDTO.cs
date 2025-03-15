@@ -7,9 +7,9 @@ namespace StoreNet.Domain.Layer.DTOs;
 public class AddToCartDTO
 {
     [Required(ErrorMessage = "CustomerId is required.")]
-    public Guid CustomerId { get; set; }
+    public string CustomerId { get; set; }
     [Required(ErrorMessage = "ProductId is required.")]
-    public Guid ProductId { get; set; }
+    public string ProductId { get; set; }
     [Required(ErrorMessage = "Quantity is required.")]
     [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]
     public int Quantity { get; set; }

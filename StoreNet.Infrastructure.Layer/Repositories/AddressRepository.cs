@@ -14,13 +14,20 @@ namespace StoreNet.Infrastructure.Layer.Repositories
             _context = context;
         }
 
-        public async Task<Address> GetByIdAsync(Guid id)
+        // Méthode pour récupérer l'adresse en fonction du type
+        public async Task<Address?> GetAddressByTypeAsync(string customerId, AddressType addressType)
+        {
+            return await _context.Addresses
+                .Where(a => a.CustomerId == customerId && a.AddressType == addressType)
+                .FirstOrDefaultAsync();
+        }
+        public async Task<Address?> GetByIdAsync(string id)
         {
             return await _context.Addresses
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
-        public async Task<List<Address>> GetByCustomerIdAsync(Guid customerId)
+        public async Task<List<Address>> GetByCustomerIdAsync(string customerId)
         {
             return await _context.Addresses
                 .Where(a => a.CustomerId == customerId)

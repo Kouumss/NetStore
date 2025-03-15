@@ -21,5 +21,5 @@ public class ProductCreateDTO
     [Range(0, 100, ErrorMessage = "Discount Percentage must be between 0% and 100%.")]
     public int DiscountPercentage { get; set; }
     [Required(ErrorMessage = "Category ID is required.")]
-    public Guid CategoryId { get; set; }
+    public string CategoryId { get; set; }
 }

@@ -9,8 +9,8 @@ public interface ICustomerRepository
     Task<List<Customer>> GetAllCustomersAsync();
     Task AddAsync(Customer customer);
     Task<bool> AnyAsync(Func<Customer, bool> predicate);
-    Task<Customer> GetByEmailAsync(string email);
-    Task<Customer> GetByIdAsync(Guid id);
+    Task<Customer?> GetByEmailAsync(string email);
+    Task<Customer> GetByIdAsync(string id);
     Task UpdateAsync(Customer customer);
 }
 

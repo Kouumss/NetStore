@@ -1,4 +1,5 @@
-﻿using StoreNet.Domain.Layer.DTOs;
+﻿using StoreNet.Application.Layer.Factories;
+using StoreNet.Domain.Layer.DTOs;
 using StoreNet.Domain.Layer.Entities;
 using StoreNet.Domain.Layer.Interfaces;
 
@@ -7,10 +8,12 @@ namespace StoreNet.Application.Layer.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IEntityFactory _entityFactory;
 
-        public CategoryService(ICategoryRepository categoryRepository)
+        public CategoryService(ICategoryRepository categoryRepository, IEntityFactory entityFactory)
         {
             _categoryRepository = categoryRepository;
+            _entityFactory = entityFactory;
         }
 
         public async Task<ApiResponse<CategoryResponseDTO>> CreateCategoryAsync(CategoryCreateDTO categoryDto)
@@ -24,13 +27,11 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<CategoryResponseDTO>(400, "Category name already exists.");
                 }
 
-                // Créer une nouvelle catégorie
-                var category = new Category
-                {
-                    Name = categoryDto.Name,
-                    Description = categoryDto.Description,
-                    IsActive = true
-                };
+                // Créer une nouvelle catégorie via la factory
+                var category = _entityFactory.CreateEntity<Category>(); // Utilisation de la factory ici
+                category.Name = categoryDto.Name;
+                category.Description = categoryDto.Description;
+                category.IsActive = true;
 
                 // Ajouter la catégorie au repository
                 await _categoryRepository.AddAsync(category);
@@ -52,7 +53,7 @@ namespace StoreNet.Application.Layer.Services
             }
         }
 
-        public async Task<ApiResponse<CategoryResponseDTO>> GetCategoryByIdAsync(Guid id)
+        public async Task<ApiResponse<CategoryResponseDTO>> GetCategoryByIdAsync(string id)
         {
             try
             {
@@ -123,8 +124,7 @@ namespace StoreNet.Application.Layer.Services
             }
         }
 
-
-        public async Task<ApiResponse<ConfirmationResponseDTO>> DeleteCategoryAsync(Guid id)
+        public async Task<ApiResponse<ConfirmationResponseDTO>> DeleteCategoryAsync(string id)
         {
             try
             {

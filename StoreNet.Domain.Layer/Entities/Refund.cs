@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using StoreNet.Domain.Layer.Interfaces;
 
 namespace StoreNet.Domain.Layer.Entities;
 
@@ -8,12 +9,12 @@ public class Refund : BaseEntity
     // Represents a refund transaction
     // Foreign key to Cancellation
     [Required(ErrorMessage = "Cancellation ID is required.")]
-    public Guid CancellationId { get; set; }
+    public string CancellationId { get; set; }
     [ForeignKey("CancellationId")]
     public Cancellation Cancellation { get; set; }
     // Foreign key to Payment
     [Required(ErrorMessage = "Payment ID is required.")]
-    public Guid PaymentId { get; set; }
+    public string PaymentId { get; set; }
     [ForeignKey("PaymentId")]
     public Payment Payment { get; set; }
     // Amount to be refunded

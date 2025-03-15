@@ -1,0 +1,92 @@
+[
+    {
+        "Id": "d09f5c5b-1559-4858-8d0e-594b973cdd1a",
+        "FirstName": "John",
+        "LastName": "Doe",
+        "Email": "john.doe@example.com",
+        "PhoneNumber": "123456789",
+        "DateOfBirth": "1985-05-15T00:00:00",
+        "Password": "password",
+        "IsActive": true,
+        "Addresses": [
+            {
+                "Id": "db5dd4a7-8e7b-4b55-90db-a6c7b5c89db4",
+                "AddressLine1": "123 Main St",
+                "AddressLine2": "Apt 4B",
+                "City": "Springfield",
+                "State": "IL",
+                "PostalCode": "62704",
+                "Country": "USA"
+            },
+            {
+                "Id": "c1b312d3-a324-4bce-8828-258b258b1974",
+                "AddressLine1": "321 Elm St",
+                "AddressLine2": null,
+                "City": "Springfield",
+                "State": "IL",
+                "PostalCode": "62704",
+                "Country": "USA"
+            }
+        ]
+    },
+    {
+        "Id": "0b2f848e-bbb9-4d36-8a31-2d122a9eb785",
+        "FirstName": "Jane",
+        "LastName": "Smith",
+        "Email": "jane.smith@example.com",
+        "PhoneNumber": "987654321",
+        "DateOfBirth": "1990-07-22T00:00:00",
+        "Password": "password",
+        "IsActive": true,
+        "Addresses": [
+            {
+                "Id": "e7932eec-c3f3-4c2e-a826-4f334c3f2be0",
+                "AddressLine1": "456 Oak St",
+                "AddressLine2": "Suite 200",
+                "City": "Springfield",
+                "State": "IL",
+                "PostalCode": "62704",
+                "Country": "USA"
+            },
+            {
+                "Id": "d9ff6217-5d18-4d49-82be-452d658c8458",
+                "AddressLine1": "654 Pine St",
+                "AddressLine2": null,
+                "City": "Springfield",
+                "State": "IL",
+                "PostalCode": "62704",
+                "Country": "USA"
+            }
+        ]
+    },
+    {
+        "Id": "bce11d38-7f8c-4ef1-8b42-b17f7f4f3c4e",
+        "FirstName": "Sam",
+        "LastName": "Wilson",
+        "Email": "sam.wilson@example.com",
+        "PhoneNumber": "555666777",
+        "DateOfBirth": "1982-10-05T00:00:00",
+        "Password": "password",
+        "IsActive": true,
+        "Addresses": [
+            {
+                "Id": "2b34a0a2-3482-4d74-b688-16342f415283",
+                "AddressLine1": "789 Birch St",
+                "AddressLine2": "Floor 3",
+                "City": "Springfield",
+                "State": "IL",
+                "PostalCode": "62704",
+                "Country": "USA"
+            },
+            {
+                "Id": "526840c2-4f09-486e-bb8c-353d7e10c5c5",
+                "AddressLine1": "987 Willow St",
+                "AddressLine2": null,
+                "City": "Springfield",
+                "State": "IL",
+                "PostalCode": "62704",
+                "Country": "USA"
+            }
+        ]
+    }
+]

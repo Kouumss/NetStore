@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StoreNet.Domain.Layer.Interfaces;
 
 namespace StoreNet.Domain.Layer.Entities;
 
 public class Cancellation : BaseEntity
 {
-
+  
     [Required(ErrorMessage = "Order ID is required.")]
-    public Guid OrderId { get; set; }
+    public string OrderId { get; set; }
     [ForeignKey("OrderId")]
     public Order Order { get; set; }
     // Reason for cancellation

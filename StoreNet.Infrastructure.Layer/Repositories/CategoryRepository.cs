@@ -22,7 +22,7 @@ namespace StoreNet.Infrastructure.Layer.Repositories
         }
 
         // Retrieves a category by its ID
-        public async Task<Category> GetByIdAsync(Guid id)
+        public async Task<Category> GetByIdAsync(string id)
         {
             var category = await _context.Categories
                 .AsNoTracking() // No need to track the entity for this read-only operation

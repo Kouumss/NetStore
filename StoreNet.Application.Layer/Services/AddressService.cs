@@ -1,66 +1,68 @@
-﻿using StoreNet.Domain.Layer.DTOs;
+﻿using AutoMapper;
+using StoreNet.Application.Layer.Factories;
+using StoreNet.Domain.Layer.DTOs;
 using StoreNet.Domain.Layer.Entities;
 using StoreNet.Domain.Layer.Interfaces;
 
 namespace StoreNet.Application.Layer.Services
 {
-
     public class AddressService : IAddressService
     {
         private readonly IAddressRepository _addressRepository;
+        private readonly IEntityFactory _entityFactory;
+        private readonly IMapper _mapConfig; // Ajouter MapConfig
 
-        public AddressService(IAddressRepository addressRepository)
+        public AddressService(IAddressRepository addressRepository, IEntityFactory entityFactory, IMapper mapConfig)
         {
             _addressRepository = addressRepository;
+            _entityFactory = entityFactory;
+            _mapConfig = mapConfig; // Initialiser MapConfig
         }
 
         public async Task<ApiResponse<AddressResponseDTO>> CreateAddressAsync(AddressCreateDTO addressDto)
         {
             try
             {
-                // Vérifier si le client existe
-                var customer = await _addressRepository.GetByCustomerIdAsync(addressDto.CustomerId);
-                if (customer is null)
+                // Vérifier si une adresse existe déjà pour ce client
+                var existingAddress = await _addressRepository.GetByCustomerIdAsync(addressDto.CustomerId);
+                if (existingAddress is not null)
                 {
-                    return new ApiResponse<AddressResponseDTO>(404, "Customer not found.");
+                    // Si une adresse existe déjà pour le client, empêcher de créer une nouvelle adresse
+                    return new ApiResponse<AddressResponseDTO>(400, "Customer already has an address.");
                 }
 
-                // Mapper de AddressCreateDTO vers Address
-                var address = new Address
+                // Convertir le string "AddressType" en enum AddressType
+                if (!Enum.TryParse(addressDto.AddressType, true, out AddressType addressTypeEnum))
                 {
-                    CustomerId = addressDto.CustomerId,
-                    AddressLine1 = addressDto.AddressLine1,
-                    AddressLine2 = addressDto.AddressLine2,
-                    City = addressDto.City,
-                    State = addressDto.State,
-                    PostalCode = addressDto.PostalCode,
-                    Country = addressDto.Country
-                };
+                    return new ApiResponse<AddressResponseDTO>(400, "Invalid address type.");
+                }
 
+                // Créer une nouvelle adresse via la factory
+                var address = _entityFactory.CreateEntity<Address>();
+                address.CustomerId = addressDto.CustomerId;
+                address.AddressLine1 = addressDto.AddressLine1;
+                address.AddressLine2 = addressDto.AddressLine2;
+                address.City = addressDto.City;
+                address.State = addressDto.State;
+                address.PostalCode = addressDto.PostalCode;
+                address.Country = addressDto.Country;
+                address.AddressType = addressTypeEnum;
+
+                // Ajouter l'adresse dans la base de données
                 await _addressRepository.AddAsync(address);
 
-                // Mapper Address vers AddressResponseDTO
-                var addressResponse = new AddressResponseDTO
-                {
-                    Id = address.Id,
-                    CustomerId = address.CustomerId,
-                    AddressLine1 = address.AddressLine1,
-                    AddressLine2 = address.AddressLine2,
-                    City = address.City,
-                    State = address.State,
-                    PostalCode = address.PostalCode,
-                    Country = address.Country
-                };
+                // Utilisation de MapConfig pour mapper l'entité en DTO
+                var addressResponse = _mapConfig.Map<Address, AddressResponseDTO>(address);
 
                 return new ApiResponse<AddressResponseDTO>(200, addressResponse);
             }
             catch (Exception ex)
             {
-                return new ApiResponse<AddressResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
+                return new ApiResponse<AddressResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<AddressResponseDTO>> GetAddressByIdAsync(Guid id)
+        public async Task<ApiResponse<AddressResponseDTO>> GetAddressByIdAsync(string id)
         {
             try
             {
@@ -70,48 +72,77 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<AddressResponseDTO>(404, "Address not found.");
                 }
 
-                var addressResponse = new AddressResponseDTO
-                {
-                    Id = address.Id,
-                    CustomerId = address.CustomerId,
-                    AddressLine1 = address.AddressLine1,
-                    AddressLine2 = address.AddressLine2,
-                    City = address.City,
-                    State = address.State,
-                    PostalCode = address.PostalCode,
-                    Country = address.Country
-                };
+                // Utilisation de MapConfig pour mapper l'entité en DTO
+                var addressResponse = _mapConfig.Map<Address, AddressResponseDTO>(address);
 
                 return new ApiResponse<AddressResponseDTO>(200, addressResponse);
             }
             catch (Exception ex)
             {
-                return new ApiResponse<AddressResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
+                return new ApiResponse<AddressResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
             }
         }
 
-        public async Task<ApiResponse<List<AddressResponseDTO>>> GetAddressesByCustomerAsync(Guid customerId)
+        public async Task<ApiResponse<AddressResponseDTO>> GetBillingAddressAsync(string customerId)
+        {
+            try
+            {
+                var billingAddress = await _addressRepository.GetAddressByTypeAsync(customerId, AddressType.Billing);
+                if (billingAddress is null)
+                {
+                    return new ApiResponse<AddressResponseDTO>(404, "Billing address not found.");
+                }
+
+                // Utilisation de MapConfig pour mapper l'entité en DTO
+                var addressResponse = _mapConfig.Map<Address, AddressResponseDTO>(billingAddress);
+
+                return new ApiResponse<AddressResponseDTO>(200, addressResponse);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<AddressResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<AddressResponseDTO>> GetShippingAddressAsync(string customerId)
+        {
+            try
+            {
+                var shippingAddress = await _addressRepository.GetAddressByTypeAsync(customerId, AddressType.Shipping);
+                if (shippingAddress is null)
+                {
+                    return new ApiResponse<AddressResponseDTO>(404, "Shipping address not found.");
+                }
+
+                // Utilisation de MapConfig pour mapper l'entité en DTO
+                var addressResponse = _mapConfig.Map<Address, AddressResponseDTO>(shippingAddress);
+
+                return new ApiResponse<AddressResponseDTO>(200, addressResponse);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<AddressResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<List<AddressResponseDTO>>> GetAddressesByCustomerAsync(string customerId)
         {
             try
             {
                 var addresses = await _addressRepository.GetByCustomerIdAsync(customerId);
-                var addressResponses = addresses.Select(a => new AddressResponseDTO
+                if (addresses is null || !addresses.Any())
                 {
-                    Id = a.Id,
-                    CustomerId = a.CustomerId,
-                    AddressLine1 = a.AddressLine1,
-                    AddressLine2 = a.AddressLine2,
-                    City = a.City,
-                    State = a.State,
-                    PostalCode = a.PostalCode,
-                    Country = a.Country
-                }).ToList();
+                    return new ApiResponse<List<AddressResponseDTO>>(404, "No addresses found for this customer.");
+                }
+
+                // Utilisation de MapConfig pour mapper les entités en DTO
+                var addressResponses = _mapConfig.Map<List<Address>, List<AddressResponseDTO>>(addresses);
 
                 return new ApiResponse<List<AddressResponseDTO>>(200, addressResponses);
             }
             catch (Exception ex)
             {
-                return new ApiResponse<List<AddressResponseDTO>>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
+                return new ApiResponse<List<AddressResponseDTO>>(500, $"An unexpected error occurred: {ex.Message}");
             }
         }
 
@@ -125,12 +156,15 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<ConfirmationResponseDTO>(404, "Address not found.");
                 }
 
+                Enum.TryParse(addressDto.AddressType, true, out AddressType addressTypeEnum);
+
                 address.AddressLine1 = addressDto.AddressLine1;
                 address.AddressLine2 = addressDto.AddressLine2;
                 address.City = addressDto.City;
                 address.State = addressDto.State;
                 address.PostalCode = addressDto.PostalCode;
                 address.Country = addressDto.Country;
+                address.AddressType = addressTypeEnum;
 
                 await _addressRepository.UpdateAsync(address);
 
@@ -143,7 +177,7 @@ namespace StoreNet.Application.Layer.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
+                return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
             }
         }
 
@@ -168,7 +202,7 @@ namespace StoreNet.Application.Layer.Services
             }
             catch (Exception ex)
             {
-                return new ApiResponse<ConfirmationResponseDTO>(500, "An unexpected error occurred while processing your request.");
+                return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
             }
         }
     }

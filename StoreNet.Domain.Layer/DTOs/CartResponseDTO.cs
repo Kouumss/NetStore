@@ -3,8 +3,8 @@
 // DTO for returning cart details
 public class CartResponseDTO
 {
-    public Guid Id { get; set; }
-    public Guid? CustomerId { get; set; }
+    public string Id { get; set; }
+    public string? CustomerId { get; set; }
     public bool IsCheckedOut { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }

@@ -1,0 +1,17 @@
+[
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa1",
+        "Name": "Electronics",
+        "Description": "Electronic items"
+    },
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa2",
+        "Name": "Books",
+        "Description": "Various books"
+    },
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa3",
+        "Name": "Clothing",
+        "Description": "Men and Women Clothing"
+    }
+]

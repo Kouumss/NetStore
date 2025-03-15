@@ -7,7 +7,7 @@ public class ChangePasswordDTO
     // DTO for changing password
 
     [Required(ErrorMessage = "CustomerId is required.")]
-    public Guid CustomerId { get; set; }
+    public string CustomerId { get; set; }
 
     [Required(ErrorMessage = "Current Password is required.")]
     public string CurrentPassword { get; set; }

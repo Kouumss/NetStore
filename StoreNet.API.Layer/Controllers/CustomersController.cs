@@ -54,7 +54,7 @@ public class CustomersController : ControllerBase
     }
     // Retrieves customer details by ID.
     [HttpGet("GetCustomerById/{id}")]
-    public async Task<ActionResult<ApiResponse<CustomerResponseDTO>>> GetCustomerById(Guid id)
+    public async Task<ActionResult<ApiResponse<CustomerResponseDTO>>> GetCustomerById(string id)
     {
         var response = await _customerService.GetCustomerByIdAsync(id);
         if (response.StatusCode != 200)
@@ -76,7 +76,7 @@ public class CustomersController : ControllerBase
     }
     // Deletes a customer by ID.
     [HttpDelete("DeleteCustomer/{id}")]
-    public async Task<ActionResult<ApiResponse<ConfirmationResponseDTO>>> DeleteCustomer(Guid id)
+    public async Task<ActionResult<ApiResponse<ConfirmationResponseDTO>>> DeleteCustomer(string id)
     {
         var response = await _customerService.DeleteCustomerAsync(id);
         if (response.StatusCode != 200)

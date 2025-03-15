@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using StoreNet.Domain.Layer.Interfaces;
 
 
 namespace StoreNet.Domain.Layer.Entities;

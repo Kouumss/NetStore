@@ -24,9 +24,8 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Address", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AddressLine1")
                         .IsRequired()
@@ -34,9 +33,11 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("AddressLine2")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("AddressType")
+                        .HasColumnType("int");
 
                     b.Property<string>("City")
                         .IsRequired()
@@ -51,8 +52,9 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
@@ -68,16 +70,17 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId", "AddressType")
+                        .IsUnique()
+                        .HasFilter("[AddressType] = 2");
 
                     b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Cancellation", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal?>("CancellationCharges")
                         .HasColumnType("decimal(18,2)");
@@ -88,8 +91,9 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.Property<decimal>("OrderAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("ProcessedAt")
                         .HasColumnType("datetime2");
@@ -125,15 +129,15 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Cart", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsCheckedOut")
                         .HasColumnType("bit");
@@ -150,12 +154,12 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.CartItem", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("CartId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CartId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -163,8 +167,9 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -189,9 +194,8 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Category", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -222,9 +226,8 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Customer", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -270,9 +273,8 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Feedback", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Comment")
                         .HasMaxLength(1000)
@@ -281,11 +283,13 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -304,18 +308,19 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Order", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("BillingAddressId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("BillingAddressId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -328,8 +333,9 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.Property<int>("OrderStatus")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ShippingAddressId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ShippingAddressId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("ShippingCost")
                         .HasColumnType("decimal(18,2)");
@@ -359,9 +365,8 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.OrderItem", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -369,11 +374,13 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
@@ -398,9 +405,8 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Payment", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
@@ -408,8 +414,9 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("OrderId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
@@ -440,12 +447,12 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Product", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CategoryId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -487,15 +494,15 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Refund", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<Guid>("CancellationId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("CancellationId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("datetime2");
@@ -506,8 +513,9 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.Property<DateTime>("InitiatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("PaymentId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("PaymentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("ProcessedBy")
                         .HasColumnType("int");
@@ -543,9 +551,8 @@ namespace StoreNet.Infrastructure.Layer.Migrations
 
             modelBuilder.Entity("StoreNet.Domain.Layer.Entities.Status", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -554,6 +561,9 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -568,7 +578,7 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.HasOne("StoreNet.Domain.Layer.Entities.Customer", "Customer")
                         .WithMany("Addresses")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -620,13 +630,13 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.HasOne("StoreNet.Domain.Layer.Entities.Customer", "Customer")
                         .WithMany("Feedbacks")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("StoreNet.Domain.Layer.Entities.Product", "Product")
                         .WithMany("Feedbacks")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Customer");
@@ -685,7 +695,7 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.HasOne("StoreNet.Domain.Layer.Entities.Order", "Order")
                         .WithOne("Payment")
                         .HasForeignKey("StoreNet.Domain.Layer.Entities.Payment", "OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -707,7 +717,7 @@ namespace StoreNet.Infrastructure.Layer.Migrations
                     b.HasOne("StoreNet.Domain.Layer.Entities.Cancellation", "Cancellation")
                         .WithOne("Refund")
                         .HasForeignKey("StoreNet.Domain.Layer.Entities.Refund", "CancellationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("StoreNet.Domain.Layer.Entities.Payment", "Payment")

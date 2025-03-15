@@ -7,7 +7,7 @@ namespace StoreNet.Domain.Layer.Interfaces
         Task AddAsync(Category category);
         Task DeleteAsync(Category category);
         Task<List<Category>> GetAllAsync();
-        Task<Category> GetByIdAsync(Guid id);
+        Task<Category> GetByIdAsync(string id);
         Task<Category?> GetByNameAsync(string name);
         Task UpdateAsync(Category category);
     }

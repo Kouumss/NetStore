@@ -7,7 +7,7 @@ namespace StoreNet.Domain.Layer.DTOs;
 public class OrderStatusUpdateDTO
 {
     [Required(ErrorMessage = "OrderId is Required")]
-    public Guid OrderId { get; set; }
+    public string OrderId { get; set; }
     [Required]
     [EnumDataType(typeof(OrderStatus), ErrorMessage = "Invalid Order Status.")]
     public OrderStatus OrderStatus { get; set; }

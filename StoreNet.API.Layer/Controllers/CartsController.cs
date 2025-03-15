@@ -15,7 +15,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Retrieves the active cart for a given customer.
         [HttpGet("GetCart/{customerId}")]
-        public async Task<ActionResult<ApiResponse<CartResponseDTO>>> GetCartByCustomerId(Guid customerId)
+        public async Task<ActionResult<ApiResponse<CartResponseDTO>>> GetCartByCustomerId(string customerId)
         {
             var response = await _shoppingCartService.GetCartByCustomerIdAsync(customerId);
             if (response.StatusCode != 200)
@@ -59,7 +59,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Clears all items from the customer's active cart.
         [HttpDelete("ClearCart")]
-        public async Task<ActionResult<ApiResponse<ConfirmationResponseDTO>>> ClearCart([FromQuery] Guid customerId)
+        public async Task<ActionResult<ApiResponse<ConfirmationResponseDTO>>> ClearCart([FromQuery] string customerId)
         {
             var response = await _shoppingCartService.ClearCartAsync(customerId);
             if (response.StatusCode != 200)

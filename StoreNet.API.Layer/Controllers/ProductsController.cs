@@ -27,7 +27,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Retrieves a product by ID.
         [HttpGet("GetProductById/{id}")]
-        public async Task<ActionResult<ApiResponse<ProductResponseDTO>>> GetProductById(Guid id)
+        public async Task<ActionResult<ApiResponse<ProductResponseDTO>>> GetProductById(string id)
         {
             var response = await _productService.GetProductByIdAsync(id);
             if (response.StatusCode != 200)
@@ -49,7 +49,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Deletes a product by ID.
         [HttpDelete("DeleteProduct/{id}")]
-        public async Task<ActionResult<ApiResponse<ConfirmationResponseDTO>>> DeleteProduct(Guid id)
+        public async Task<ActionResult<ApiResponse<ConfirmationResponseDTO>>> DeleteProduct(string id)
         {
             var response = await _productService.DeleteProductAsync(id);
             if (response.StatusCode != 200)
@@ -71,7 +71,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Retrieves all products by category.
         [HttpGet("GetAllProductsByCategory/{categoryId}")]
-        public async Task<ActionResult<ApiResponse<List<ProductResponseDTO>>>> GetAllProductsByCategory(Guid categoryId)
+        public async Task<ActionResult<ApiResponse<List<ProductResponseDTO>>>> GetAllProductsByCategory(string categoryId)
         {
             var response = await _productService.GetAllProductsByCategoryAsync(categoryId);
             if (response.StatusCode != 200)

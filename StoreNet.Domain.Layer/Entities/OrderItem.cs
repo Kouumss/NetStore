@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using StoreNet.Domain.Layer.Interfaces;
 
 namespace StoreNet.Domain.Layer.Entities;
 
@@ -9,12 +10,12 @@ public class OrderItem : BaseEntity
 
     // Foreign key to Order
     [Required(ErrorMessage = "Order ID is required.")]
-    public Guid OrderId { get; set; }
+    public string OrderId { get; set; }
     [ForeignKey("OrderId")]
     public Order Order { get; set; }
     // Foreign key to Product
     [Required(ErrorMessage = "Product ID is required.")]
-    public Guid ProductId { get; set; }
+    public string ProductId { get; set; }
     [ForeignKey("ProductId")]
     public Product Product { get; set; }
     [Range(1, 100, ErrorMessage = "Quantity must be between 1 and 100.")]

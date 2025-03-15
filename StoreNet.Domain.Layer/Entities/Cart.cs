@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StoreNet.Domain.Layer.Interfaces;
+
 
 namespace StoreNet.Domain.Layer.Entities;
 
 public class Cart : BaseEntity
 {
     // Represents a shopping cart
-    public Guid CustomerId { get; set; }
+    public string CustomerId { get; set; }
     [ForeignKey("CustomerId")]
     public Customer Customer { get; set; }
     public bool IsCheckedOut { get; set; } = false;

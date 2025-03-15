@@ -19,12 +19,29 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.3" />
     <PackageReference Include="RT.Comb" Version="4.0.2" />
     <PackageReference Include="RT.Comb.AspNetCore" Version="4.0.2" />
+    <PackageReference Include="Ulid" Version="1.3.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\StoreNet.Domain.Layer\StoreNet.Domain.Layer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data\Seed\categoriesSeed.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Seed\customersSeed.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Seed\ordersSeed.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Seed\productsSeed.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

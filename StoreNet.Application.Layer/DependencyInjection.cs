@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
+using StoreNet.Application.Layer.Factories;
 using StoreNet.Application.Layer.Services;
 using StoreNet.Application.Services;
 using StoreNet.Domain.Layer.Interfaces;
@@ -19,6 +16,12 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IShoppingCartService, ShoppingCartService>();
+        services.AddScoped<IOrderService, OrderService>();
+
+        services.AddAutoMapper(typeof(MappingProfile).Assembly); 
+
+
+        services.AddScoped<IEntityFactory, EntityFactory>();
 
         return services;
     }

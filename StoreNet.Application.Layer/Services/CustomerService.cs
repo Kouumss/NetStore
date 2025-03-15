@@ -1,264 +1,244 @@
-﻿// Couche Application
-using StoreNet.Domain.Layer.DTOs;
+﻿using StoreNet.Domain.Layer.DTOs;
 using StoreNet.Domain.Layer.Entities;
 using StoreNet.Domain.Layer.Interfaces;
+using StoreNet.Application.Layer.Factories;
 
-namespace StoreNet.Application.Services;
+using AutoMapper;
 
-public class CustomerService : ICustomerService
+namespace StoreNet.Application.Services
 {
-    private readonly ICustomerRepository _customerRepository;
-
-    public CustomerService(ICustomerRepository customerRepository)
+    public class CustomerService : ICustomerService
     {
-        _customerRepository = customerRepository;
-    }
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IAddressRepository _addressRepository;
+        private readonly IEntityFactory _entityFactory;
+        private readonly IMapper _mapper;
 
-    public async Task<ApiResponse<List<CustomerResponseDTO>>> GetAllCustomersAsync()
-    {
-        try
+        public CustomerService(ICustomerRepository customerRepository, IAddressRepository addressRepository, IEntityFactory entityFactory, IMapper mapConfig)
         {
-            var customers = await _customerRepository.GetAllCustomersAsync();
-
-            // Map to response DTOs if necessary
-            var customerResponseDtos = customers.Select(c => new CustomerResponseDTO
-            {
-                Id = c.Id,
-                FirstName = c.FirstName,
-                LastName = c.LastName,
-                Email = c.Email,
-                PhoneNumber = c.PhoneNumber,
-                DateOfBirth = c.DateOfBirth
-            }).ToList();
-
-            return new ApiResponse<List<CustomerResponseDTO>>(200, customerResponseDtos);
+            _customerRepository = customerRepository;
+            _addressRepository = addressRepository;
+            _entityFactory = entityFactory;
+            _mapper = mapConfig; 
         }
-        catch (Exception ex)
-        {
-            return new ApiResponse<List<CustomerResponseDTO>>(500, $"An unexpected error occurred: {ex.Message}");
-        }
-    }
 
-    public async Task<ApiResponse<CustomerResponseDTO>> RegisterCustomerAsync(CustomerRegistrationDTO customerDto)
-    {
-        try
+        public async Task<ApiResponse<List<CustomerResponseDTO>>> GetAllCustomersAsync()
         {
-            // Vérification si l'email existe déjà via GetEmailAsync
-            var existingCustomer = await _customerRepository.GetByEmailAsync(customerDto.Email.ToLower());
-
-            if (existingCustomer is not null)
+            try
             {
-                return new ApiResponse<CustomerResponseDTO>(400, "Email is already in use.");
+                var customers = await _customerRepository.GetAllCustomersAsync();
+
+                var customerResponseDtos = _mapper.Map<List<Customer>, List<CustomerResponseDTO>>(customers);
+
+                return new ApiResponse<List<CustomerResponseDTO>>(200, customerResponseDtos);
             }
-
-            // Création de l'entité Customer à partir du DTO
-            var customer = new Customer
+            catch (Exception ex)
             {
-                FirstName = customerDto.FirstName,
-                LastName = customerDto.LastName,
-                Email = customerDto.Email,
-                PhoneNumber = customerDto.PhoneNumber,
-                DateOfBirth = customerDto.DateOfBirth,
-                IsActive = true,
-                Password = BCrypt.Net.BCrypt.HashPassword(customerDto.Password)
-            };
-
-            // Sauvegarde du client dans la base de données via le repository
-            await _customerRepository.AddAsync(customer);
-
-            // Préparation de la réponse
-            var customerResponse = new CustomerResponseDTO
-            {
-                Id = customer.Id,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber,
-                DateOfBirth = customer.DateOfBirth
-            };
-
-            return new ApiResponse<CustomerResponseDTO>(200, customerResponse);
-        }
-        catch (Exception ex)
-        {
-            // Gestion des erreurs
-            return new ApiResponse<CustomerResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
-        }
-    }
-
-
-    public async Task<ApiResponse<LoginResponseDTO>> LoginAsync(LoginDTO loginDto)
-    {
-        try
-        {
-            // Recherche du client par email
-            var customer = await _customerRepository.GetByEmailAsync(loginDto.Email);
-            if (customer is null)
-            {
-                return new ApiResponse<LoginResponseDTO>(401, "Invalid email or password.");
+                return new ApiResponse<List<CustomerResponseDTO>>(500, $"An unexpected error occurred: {ex.Message}");
             }
+        }
 
-            // Vérification du mot de passe avec BCrypt
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, customer.Password);
-            if (!isPasswordValid)
+        public async Task<ApiResponse<CustomerResponseDTO>> RegisterCustomerAsync(CustomerRegistrationDTO customerDto)
+        {
+            try
             {
-                return new ApiResponse<LoginResponseDTO>(401, "Invalid email or password.");
+                var existingCustomer = await _customerRepository.GetByEmailAsync(customerDto.Email.ToLower());
+                if (existingCustomer is not null)
+                {
+                    return new ApiResponse<CustomerResponseDTO>(400, "Email is already in use.");
+                }
+
+                var customer = _entityFactory.CreateEntity<Customer>();
+                customer.FirstName = customerDto.FirstName;
+                customer.LastName = customerDto.LastName;
+                customer.Email = customerDto.Email;
+                customer.PhoneNumber = customerDto.PhoneNumber;
+                customer.DateOfBirth = customerDto.DateOfBirth;
+                customer.IsActive = true;
+                customer.Password = BCrypt.Net.BCrypt.HashPassword(customerDto.Password);
+
+                await _customerRepository.AddAsync(customer);
+
+                var address = _entityFactory.CreateEntity<Address>();
+                address.CustomerId = customer.Id;
+                address.AddressLine1 = customerDto.AddressLine1;
+                address.AddressLine2 = customerDto.AddressLine2;
+                address.City = customerDto.City;
+                address.State = customerDto.State;
+                address.PostalCode = customerDto.PostalCode;
+                address.Country = customerDto.Country;
+
+                await _addressRepository.AddAsync(address);
+
+                customer.Addresses = new List<Address> { address };
+                await _customerRepository.UpdateAsync(customer);
+
+                // Map the created customer to a DTO
+                var customerResponse = _mapper.Map<Customer, CustomerResponseDTO>(customer);
+
+                return new ApiResponse<CustomerResponseDTO>(200, customerResponse);
             }
-
-            // Préparation de la réponse
-            var loginResponse = new LoginResponseDTO
+            catch (Exception ex)
             {
-                Message = "Login successful.",
-                CustomerId = customer.Id,
-                CustomerName = $"{customer.FirstName} {customer.LastName}"
-            };
-
-            return new ApiResponse<LoginResponseDTO>(200, loginResponse);
-        }
-        catch (Exception ex)
-        {
-            // Gestion des erreurs
-            return new ApiResponse<LoginResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
-        }
-    }
-
-    public async Task<ApiResponse<CustomerResponseDTO>> GetCustomerByIdAsync(Guid id)
-    {
-        try
-        {
-            // Récupération du client par ID
-            var customer = await _customerRepository.GetByIdAsync(id);
-            if (customer is null || !customer.IsActive)
-            {
-                return new ApiResponse<CustomerResponseDTO>(404, "Customer not found.");
+                return new ApiResponse<CustomerResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
             }
-
-            // Préparation de la réponse
-            var customerResponse = new CustomerResponseDTO
-            {
-                Id = customer.Id,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber,
-                DateOfBirth = customer.DateOfBirth
-            };
-
-            return new ApiResponse<CustomerResponseDTO>(200, customerResponse);
         }
-        catch (Exception ex)
-        {
-            // Gestion des erreurs
-            return new ApiResponse<CustomerResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
-        }
-    }
 
-    public async Task<ApiResponse<ConfirmationResponseDTO>> UpdateCustomerAsync(CustomerUpdateDTO customerDto)
-    {
-        try
+        public async Task<ApiResponse<LoginResponseDTO>> LoginAsync(LoginDTO loginDto)
         {
-            // Recherche du client par ID
-            var customer = await _customerRepository.GetByIdAsync(customerDto.CustomerId);
-            if (customer is null)
+            try
             {
-                return new ApiResponse<ConfirmationResponseDTO>(404, "Customer not found.");
+                var customer = await _customerRepository.GetByEmailAsync(loginDto.Email);
+                if (customer is null)
+                {
+                    return new ApiResponse<LoginResponseDTO>(401, "Invalid email or password.");
+                }
+
+                bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, customer.Password);
+                if (!isPasswordValid)
+                {
+                    return new ApiResponse<LoginResponseDTO>(401, "Invalid email or password.");
+                }
+
+                var loginResponse = new LoginResponseDTO
+                {
+                    Message = "Login successful.",
+                    CustomerId = customer.Id,
+                    CustomerName = $"{customer.FirstName} {customer.LastName}"
+                };
+
+                return new ApiResponse<LoginResponseDTO>(200, loginResponse);
             }
-
-            // Vérification si l'email est déjà utilisé par un autre client
-            if (customer.Email != customerDto.Email && await _customerRepository.AnyAsync(c => c.Email == customerDto.Email))
+            catch (Exception ex)
             {
-                return new ApiResponse<ConfirmationResponseDTO>(400, "Email is already in use.");
+                return new ApiResponse<LoginResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
             }
-
-            // Mise à jour des informations du client
-            customer.FirstName = customerDto.FirstName;
-            customer.LastName = customerDto.LastName;
-            customer.Email = customerDto.Email;
-            customer.PhoneNumber = customerDto.PhoneNumber;
-            customer.DateOfBirth = customerDto.DateOfBirth;
-
-            // Sauvegarde des modifications
-            await _customerRepository.UpdateAsync(customer);
-
-            // Préparation de la réponse
-            var confirmationMessage = new ConfirmationResponseDTO
-            {
-                Message = $"Customer with Id {customerDto.CustomerId} updated successfully."
-            };
-
-            return new ApiResponse<ConfirmationResponseDTO>(200, confirmationMessage);
         }
-        catch (Exception ex)
-        {
-            // Gestion des erreurs
-            return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
-        }
-    }
 
-    public async Task<ApiResponse<ConfirmationResponseDTO>> DeleteCustomerAsync(Guid id)
-    {
-        try
+        public async Task<ApiResponse<CustomerResponseDTO>> GetCustomerByIdAsync(string id)
         {
-            // Recherche du client par ID
-            var customer = await _customerRepository.GetByIdAsync(id);
-            if (customer is null)
+            try
             {
-                return new ApiResponse<ConfirmationResponseDTO>(404, "Customer not found.");
+                var customer = await _customerRepository.GetByIdAsync(id);
+                if (customer is null)
+                {
+                    return new ApiResponse<CustomerResponseDTO>(404, "Customer not found.");
+                }
+
+                var customerResponse = _mapper.Map<Customer, CustomerResponseDTO>(customer);
+
+                // If the customer has addresses, map them as well
+                if (customer.Addresses?.Any() == true)
+                {
+                    customerResponse.Addresses = _mapper.Map<List<Address>, List<AddressResponseDTO>>(customer.Addresses.ToList());
+                }
+
+                // If the customer has orders, map them as well
+                if (customer.Orders?.Any() == true)
+                {
+                    customerResponse.Orders = _mapper.Map<List<Order>, List<OrderResponseDTO>>(customer.Orders.ToList());
+                }
+
+                return new ApiResponse<CustomerResponseDTO>(200, customerResponse);
             }
-
-            // Soft delete (désactivation du client)
-            customer.IsActive = false;
-            await _customerRepository.UpdateAsync(customer);
-
-            // Préparation de la réponse
-            var confirmationMessage = new ConfirmationResponseDTO
+            catch (Exception ex)
             {
-                Message = $"Customer with Id {id} deleted successfully."
-            };
-
-            return new ApiResponse<ConfirmationResponseDTO>(200, confirmationMessage);
-        }
-        catch (Exception ex)
-        {
-            // Gestion des erreurs
-            return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
-        }
-    }
-
-    public async Task<ApiResponse<ConfirmationResponseDTO>> ChangePasswordAsync(ChangePasswordDTO changePasswordDto)
-    {
-        try
-        {
-            // Recherche du client par ID
-            var customer = await _customerRepository.GetByIdAsync(changePasswordDto.CustomerId);
-            if (customer is null || !customer.IsActive)
-            {
-                return new ApiResponse<ConfirmationResponseDTO>(404, "Customer not found or inactive.");
+                return new ApiResponse<CustomerResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
             }
-
-            // Vérification du mot de passe actuel
-            bool isCurrentPasswordValid = BCrypt.Net.BCrypt.Verify(changePasswordDto.CurrentPassword, customer.Password);
-            if (!isCurrentPasswordValid)
-            {
-                return new ApiResponse<ConfirmationResponseDTO>(401, "Current password is incorrect.");
-            }
-
-            // Hashage du nouveau mot de passe
-            customer.Password = BCrypt.Net.BCrypt.HashPassword(changePasswordDto.NewPassword);
-            await _customerRepository.UpdateAsync(customer);
-
-            // Préparation de la réponse
-            var confirmationMessage = new ConfirmationResponseDTO
-            {
-                Message = "Password changed successfully."
-            };
-
-            return new ApiResponse<ConfirmationResponseDTO>(200, confirmationMessage);
         }
-        catch (Exception ex)
+
+        public async Task<ApiResponse<ConfirmationResponseDTO>> UpdateCustomerAsync(CustomerUpdateDTO customerDto)
         {
-            // Gestion des erreurs
-            return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred while processing your request, Error: {ex.Message}");
+            try
+            {
+                var customer = await _customerRepository.GetByIdAsync(customerDto.CustomerId);
+                if (customer is null)
+                {
+                    return new ApiResponse<ConfirmationResponseDTO>(404, "Customer not found.");
+                }
+
+                if (customer.Email != customerDto.Email && await _customerRepository.AnyAsync(c => c.Email == customerDto.Email))
+                {
+                    return new ApiResponse<ConfirmationResponseDTO>(400, "Email is already in use.");
+                }
+
+                customer.FirstName = customerDto.FirstName;
+                customer.LastName = customerDto.LastName;
+                customer.Email = customerDto.Email;
+                customer.PhoneNumber = customerDto.PhoneNumber;
+                customer.DateOfBirth = customerDto.DateOfBirth;
+
+                await _customerRepository.UpdateAsync(customer);
+
+                var confirmationMessage = new ConfirmationResponseDTO
+                {
+                    Message = $"Customer with Id {customerDto.CustomerId} updated successfully."
+                };
+
+                return new ApiResponse<ConfirmationResponseDTO>(200, confirmationMessage);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<ConfirmationResponseDTO>> DeleteCustomerAsync(string id)
+        {
+            try
+            {
+                var customer = await _customerRepository.GetByIdAsync(id);
+                if (customer is null)
+                {
+                    return new ApiResponse<ConfirmationResponseDTO>(404, "Customer not found.");
+                }
+
+                customer.IsActive = false;
+                await _customerRepository.UpdateAsync(customer);
+
+                var confirmationMessage = new ConfirmationResponseDTO
+                {
+                    Message = $"Customer with Id {id} deleted successfully."
+                };
+
+                return new ApiResponse<ConfirmationResponseDTO>(200, confirmationMessage);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
+            }
+        }
+
+        public async Task<ApiResponse<ConfirmationResponseDTO>> ChangePasswordAsync(ChangePasswordDTO changePasswordDto)
+        {
+            try
+            {
+                var customer = await _customerRepository.GetByIdAsync(changePasswordDto.CustomerId);
+                if (customer is null || !customer.IsActive)
+                {
+                    return new ApiResponse<ConfirmationResponseDTO>(404, "Customer not found or inactive.");
+                }
+
+                bool isCurrentPasswordValid = BCrypt.Net.BCrypt.Verify(changePasswordDto.CurrentPassword, customer.Password);
+                if (!isCurrentPasswordValid)
+                {
+                    return new ApiResponse<ConfirmationResponseDTO>(401, "Current password is incorrect.");
+                }
+
+                customer.Password = BCrypt.Net.BCrypt.HashPassword(changePasswordDto.NewPassword);
+                await _customerRepository.UpdateAsync(customer);
+
+                var confirmationMessage = new ConfirmationResponseDTO
+                {
+                    Message = "Password changed successfully."
+                };
+
+                return new ApiResponse<ConfirmationResponseDTO>(200, confirmationMessage);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred: {ex.Message}");
+            }
         }
     }
 }

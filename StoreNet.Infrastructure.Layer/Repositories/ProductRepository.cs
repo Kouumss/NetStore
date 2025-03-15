@@ -14,7 +14,7 @@ namespace StoreNet.Infrastructure.Layer.Repositories
             _context = context;
         }
 
-        public async Task<Product?> GetByIdAsync(Guid id)
+        public async Task<Product?> GetByIdAsync(string id)
         {
             return await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -29,7 +29,7 @@ namespace StoreNet.Infrastructure.Layer.Repositories
             return await _context.Products.ToListAsync();
         }
 
-        public async Task<List<Product>> GetAllByCategoryAsync(Guid categoryId)
+        public async Task<List<Product>> GetAllByCategoryAsync(string categoryId)
         {
             return await _context.Products.Where(p => p.CategoryId == categoryId).ToListAsync();
         }

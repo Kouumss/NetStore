@@ -4,7 +4,7 @@ namespace StoreNet.Domain.Layer.DTOs;
 public class CustomerUpdateDTO
 {
     [Required(ErrorMessage = "CustomerId is required.")]
-    public Guid CustomerId { get; set; }
+    public string CustomerId { get; set; }
 
     [Required(ErrorMessage = "First Name is required.")]
     [MinLength(2, ErrorMessage = "First Name must be at least 2 characters.")]

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using StoreNet.Domain.Layer.Interfaces;
 
 namespace StoreNet.Domain.Layer.Entities;
 
@@ -7,7 +8,7 @@ public class Payment : BaseEntity
 {
     // Represents a payment transaction
     [Required]
-    public Guid OrderId { get; set; }
+    public string OrderId { get; set; }
     [ForeignKey("OrderId")]
     public Order Order { get; set; }
     [Required]

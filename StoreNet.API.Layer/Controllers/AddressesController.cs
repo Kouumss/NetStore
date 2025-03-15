@@ -27,7 +27,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Retrieves an address by ID.
         [HttpGet("GetAddressById/{id}")]
-        public async Task<ActionResult<ApiResponse<AddressResponseDTO>>> GetAddressById(Guid id)
+        public async Task<ActionResult<ApiResponse<AddressResponseDTO>>> GetAddressById(string id)
         {
             var response = await _addressService.GetAddressByIdAsync(id);
             if (response.StatusCode != 200)
@@ -60,7 +60,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Retrieves all addresses for a specific customer.
         [HttpGet("GetAddressesByCustomer/{customerId}")]
-        public async Task<ActionResult<ApiResponse<List<AddressResponseDTO>>>> GetAddressesByCustomer(Guid customerId)
+        public async Task<ActionResult<ApiResponse<List<AddressResponseDTO>>>> GetAddressesByCustomer(string customerId)
         {
             var response = await _addressService.GetAddressesByCustomerAsync(customerId);
             if (response.StatusCode != 200)

@@ -1,6 +1,7 @@
 ﻿using StoreNet.Domain.Layer.DTOs;
 using StoreNet.Domain.Layer.Entities;
 using StoreNet.Domain.Layer.Interfaces;
+using AutoMapper;
 
 namespace StoreNet.Application.Layer.Services
 {
@@ -8,19 +9,20 @@ namespace StoreNet.Application.Layer.Services
     {
         private readonly IShoppingCartRepository _cartRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IMapper _mapper;
 
-        public ShoppingCartService(IShoppingCartRepository cartRepository, IProductRepository productRepository)
+        public ShoppingCartService(IShoppingCartRepository cartRepository, IProductRepository productRepository, IMapper mapper)
         {
             _cartRepository = cartRepository;
             _productRepository = productRepository;
+            _mapper = mapper;
         }
 
-        public async Task<ApiResponse<CartResponseDTO>> GetCartByCustomerIdAsync(Guid customerId)
+        public async Task<ApiResponse<CartResponseDTO>> GetCartByCustomerIdAsync(string customerId)
         {
             try
             {
                 var cart = await _cartRepository.GetActiveCartByCustomerIdAsync(customerId);
-
                 if (cart is null)
                 {
                     var emptyCartDTO = new CartResponseDTO
@@ -37,7 +39,8 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<CartResponseDTO>(200, emptyCartDTO);
                 }
 
-                var cartDTO = MapCartToDTO(cart);
+                // Utilisation d'AutoMapper pour transformer le modèle Cart en DTO
+                var cartDTO = _mapper.Map<CartResponseDTO>(cart);
                 return new ApiResponse<CartResponseDTO>(200, cartDTO);
             }
             catch (Exception ex)
@@ -50,7 +53,6 @@ namespace StoreNet.Application.Layer.Services
         {
             try
             {
-                // Utilisation du ProductRepository pour récupérer le produit
                 var product = await _productRepository.GetByIdAsync(addToCartDTO.ProductId);
                 if (product is null)
                 {
@@ -102,7 +104,7 @@ namespace StoreNet.Application.Layer.Services
                 cart.UpdatedAt = DateTime.UtcNow;
                 await _cartRepository.SaveChangesAsync();
 
-                var cartDTO = MapCartToDTO(cart);
+                var cartDTO = _mapper.Map<CartResponseDTO>(cart);
                 return new ApiResponse<CartResponseDTO>(200, cartDTO);
             }
             catch (Exception ex)
@@ -127,7 +129,6 @@ namespace StoreNet.Application.Layer.Services
                     return new ApiResponse<CartResponseDTO>(404, "Cart item not found.");
                 }
 
-                // Utilisation du ProductRepository pour récupérer le produit
                 var product = await _productRepository.GetByIdAsync(cartItem.ProductId);
                 if (product is null)
                 {
@@ -148,7 +149,7 @@ namespace StoreNet.Application.Layer.Services
                 cart.UpdatedAt = DateTime.UtcNow;
                 await _cartRepository.SaveChangesAsync();
 
-                var cartDTO = MapCartToDTO(cart);
+                var cartDTO = _mapper.Map<CartResponseDTO>(cart);
                 return new ApiResponse<CartResponseDTO>(200, cartDTO);
             }
             catch (Exception ex)
@@ -178,7 +179,7 @@ namespace StoreNet.Application.Layer.Services
                 cart.UpdatedAt = DateTime.UtcNow;
                 await _cartRepository.SaveChangesAsync();
 
-                var cartDTO = MapCartToDTO(cart);
+                var cartDTO = _mapper.Map<CartResponseDTO>(cart);
                 return new ApiResponse<CartResponseDTO>(200, cartDTO);
             }
             catch (Exception ex)
@@ -187,7 +188,7 @@ namespace StoreNet.Application.Layer.Services
             }
         }
 
-        public async Task<ApiResponse<ConfirmationResponseDTO>> ClearCartAsync(Guid customerId)
+        public async Task<ApiResponse<ConfirmationResponseDTO>> ClearCartAsync(string customerId)
         {
             try
             {
@@ -210,44 +211,6 @@ namespace StoreNet.Application.Layer.Services
             {
                 return new ApiResponse<ConfirmationResponseDTO>(500, $"An unexpected error occurred, Error: {ex.Message}");
             }
-        }
-
-        private CartResponseDTO MapCartToDTO(Cart cart)
-        {
-            var cartItemsDto = cart.CartItems?.Select(ci => new CartItemResponseDTO
-            {
-                Id = ci.Id,
-                ProductId = ci.ProductId,
-                ProductName = ci.Product?.Name,
-                Quantity = ci.Quantity,
-                UnitPrice = ci.UnitPrice,
-                Discount = ci.Discount,
-                TotalPrice = ci.TotalPrice
-            }).ToList() ?? new List<CartItemResponseDTO>();
-
-            decimal totalBasePrice = 0;
-            decimal totalDiscount = 0;
-            decimal totalAmount = 0;
-
-            foreach (var item in cartItemsDto)
-            {
-                totalBasePrice += item.UnitPrice * item.Quantity;
-                totalDiscount += item.Discount * item.Quantity;
-                totalAmount += item.TotalPrice;
-            }
-
-            return new CartResponseDTO
-            {
-                Id = cart.Id,
-                CustomerId = cart.CustomerId,
-                IsCheckedOut = cart.IsCheckedOut,
-                CreatedAt = cart.CreatedAt,
-                UpdatedAt = cart.UpdatedAt,
-                CartItems = cartItemsDto,
-                TotalBasePrice = totalBasePrice,
-                TotalDiscount = totalDiscount,
-                TotalAmount = totalAmount
-            };
         }
     }
 }

@@ -5,12 +5,12 @@ namespace StoreNet.Domain.Layer.DTOs;
 // DTO for returning complete order details.
 public class OrderResponseDTO
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; }
     public string OrderNumber { get; set; }
     public DateTime OrderDate { get; set; }
-    public Guid CustomerId { get; set; }
-    public Guid BillingAddressId { get; set; }
-    public Guid ShippingAddressId { get; set; }
+    public string CustomerId { get; set; }
+    public string BillingAddressId { get; set; }
+    public string ShippingAddressId { get; set; }
     public decimal TotalBaseAmount { get; set; }
     public decimal TotalDiscountAmount { get; set; }
     public decimal ShippingCost { get; set; }

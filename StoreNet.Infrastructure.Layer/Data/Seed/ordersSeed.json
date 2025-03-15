@@ -1,0 +1,71 @@
+[
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
+        "OrderNumber": "ORD-001",
+        "CustomerId": "d09f5c5b-1559-4858-8d0e-594b973cdd1a",
+        "OrderDate": "2025-03-14T20:27:47.488Z",
+        "BillingAddressId": "db5dd4a7-8e7b-4b55-90db-a6c7b5c89db4",
+        "ShippingAddressId": "c1b312d3-a324-4bce-8828-258b258b1974",
+        "TotalBaseAmount": 1000,
+        "TotalDiscountAmount": 100,
+        "ShippingCost": 10,
+        "TotalAmount": 910,
+        "OrderStatus": "Pending",
+        "OrderItems": [
+            {
+                "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa8",
+                "ProductId": "3fa85f64-5717-4562-b3fc-2c963f66afa4",
+                "Quantity": 1,
+                "UnitPrice": 1000,
+                "TotalPrice": 1000,
+                "Discount": 100
+            }
+        ]
+    },
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afa9",
+        "OrderNumber": "ORD-002",
+        "CustomerId": "0b2f848e-bbb9-4d36-8a31-2d122a9eb785",
+        "OrderDate": "2025-03-14T20:27:47.488Z",
+        "BillingAddressId": "e7932eec-c3f3-4c2e-a826-4f334c3f2be0",
+        "ShippingAddressId": "d9ff6217-5d18-4d49-82be-452d658c8458",
+        "TotalBaseAmount": 40,
+        "TotalDiscountAmount": 2,
+        "ShippingCost": 5,
+        "TotalAmount": 43,
+        "OrderStatus": "Pending",
+        "OrderItems": [
+            {
+                "Id": "3fa85f64-5717-4562-b3fc-2c963f66afaa",
+                "ProductId": "3fa85f64-5717-4562-b3fc-2c963f66afa5",
+                "Quantity": 2,
+                "UnitPrice": 20,
+                "TotalPrice": 40,
+                "Discount": 2
+            }
+        ]
+    },
+    {
+        "Id": "3fa85f64-5717-4562-b3fc-2c963f66afab",
+        "OrderNumber": "ORD-003",
+        "CustomerId": "bce11d38-7f8c-4ef1-8b42-b17f7f4f3c4e",
+        "OrderDate": "2025-03-14T20:27:47.488Z",
+        "BillingAddressId": "2b34a0a2-3482-4d74-b688-16342f415283",
+        "ShippingAddressId": "526840c2-4f09-486e-bb8c-353d7e10c5c5",
+        "TotalBaseAmount": 45,
+        "TotalDiscountAmount": 9,
+        "ShippingCost": 5,
+        "TotalAmount": 41,
+        "OrderStatus": "Pending",
+        "OrderItems": [
+            {
+                "Id": "3fa85f64-5717-4562-b3fc-2c963f66afac",
+                "ProductId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "Quantity": 3,
+                "UnitPrice": 15,
+                "TotalPrice": 45,
+                "Discount": 9
+            }
+        ]
+    }
+]

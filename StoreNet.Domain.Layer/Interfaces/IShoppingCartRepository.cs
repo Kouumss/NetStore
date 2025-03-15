@@ -4,13 +4,13 @@ namespace StoreNet.Domain.Layer.Interfaces
 {
     public interface IShoppingCartRepository
     {
-        Task<Cart> GetActiveCartByCustomerIdAsync(Guid customerId);
-        Task<Cart> CreateCartAsync(Guid customerId);
-        Task<CartItem> GetCartItemAsync(Guid cartId, Guid productId);
+        Task<Cart> GetActiveCartByCustomerIdAsync(string customerId);
+        Task<Cart> CreateCartAsync(string customerId);
+        Task<CartItem> GetCartItemAsync(string cartId, string productId);
         Task AddCartItemAsync(CartItem cartItem);
         Task UpdateCartItemAsync(CartItem cartItem);
         Task RemoveCartItemAsync(CartItem cartItem);
-        Task ClearCartItemsAsync(Guid cartId);
+        Task ClearCartItemsAsync(string cartId);
         Task SaveChangesAsync();
     }
 }

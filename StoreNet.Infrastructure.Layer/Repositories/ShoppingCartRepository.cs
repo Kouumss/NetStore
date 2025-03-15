@@ -14,7 +14,7 @@ namespace StoreNet.Infrastructure.Layer.Repositories
             _context = context;
         }
 
-        public async Task<Cart> GetActiveCartByCustomerIdAsync(Guid customerId)
+        public async Task<Cart> GetActiveCartByCustomerIdAsync(string customerId)
         {
             return await _context.Carts
                 .Include(c => c.CartItems)
@@ -22,7 +22,7 @@ namespace StoreNet.Infrastructure.Layer.Repositories
                 .FirstOrDefaultAsync(c => c.CustomerId == customerId && !c.IsCheckedOut);
         }
 
-        public async Task<Cart> CreateCartAsync(Guid customerId)
+        public async Task<Cart> CreateCartAsync(string customerId)
         {
             var cart = new Cart
             {
@@ -37,7 +37,7 @@ namespace StoreNet.Infrastructure.Layer.Repositories
             return cart;
         }
 
-        public async Task<CartItem> GetCartItemAsync(Guid cartId, Guid productId)
+        public async Task<CartItem> GetCartItemAsync(string cartId, string productId)
         {
             return await _context.CartItems
                 .FirstOrDefaultAsync(ci => ci.CartId == cartId && ci.ProductId == productId);
@@ -61,7 +61,7 @@ namespace StoreNet.Infrastructure.Layer.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task ClearCartItemsAsync(Guid cartId)
+        public async Task ClearCartItemsAsync(string cartId)
         {
             var cartItems = _context.CartItems.Where(ci => ci.CartId == cartId);
             _context.CartItems.RemoveRange(cartItems);

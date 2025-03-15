@@ -27,7 +27,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Retrieves a category by ID.
         [HttpGet("GetCategoryById/{id}")]
-        public async Task<ActionResult<ApiResponse<CategoryResponseDTO>>> GetCategoryById(Guid id)
+        public async Task<ActionResult<ApiResponse<CategoryResponseDTO>>> GetCategoryById(string id)
         {
             var response = await _categoryService.GetCategoryByIdAsync(id);
             if (response.StatusCode != 200)
@@ -49,7 +49,7 @@ namespace StoreNet.API.Layer.Controllers
         }
         // Deletes a category by ID.
         [HttpDelete("DeleteCategory/{id}")]
-        public async Task<ActionResult<ApiResponse<ConfirmationResponseDTO>>> DeleteCategory(Guid id)
+        public async Task<ActionResult<ApiResponse<ConfirmationResponseDTO>>> DeleteCategory(string id)
         {
             var response = await _categoryService.DeleteCategoryAsync(id);
             if (response.StatusCode != 200)
